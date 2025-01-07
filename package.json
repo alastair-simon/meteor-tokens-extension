@@ -23,12 +23,24 @@
         "configuration": "./language-configuration.json"
       }
     ],
-    "commands": [
-      {
-        "command": "meteor-tokens.helloWorld",
-        "title": "Hello World"
+    "capabilities": {
+      "completionProvider": {
+        "resolveProvider": true,
+        "triggerCharacters": [
+          " ",
+          ":"
+        ]
       }
-    ]
+    },
+    "configurationDefaults": {
+      "[vue]": {
+        "editor.quickSuggestions": {
+          "strings": true,
+          "other": true,
+          "comments": true
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

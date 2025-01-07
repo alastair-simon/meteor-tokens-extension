@@ -1,33 +1,45 @@
 import * as vscode from "vscode";
 
+const FONT_TOKENS = [
+  "var(--brand-text-sm)",
+  "var(--brand-text-md)",
+  "var(--brand-text-lg)",
+  "var(--brand-text-xl)",
+];
+
 export function activate(context: vscode.ExtensionContext) {
+  // This will handle both property and value suggestions
   const provider = vscode.languages.registerCompletionItemProvider(
-    { pattern: "**/*.vue" },
+    [
+      { scheme: "file", language: "vue" },
+      { scheme: "file", language: "css" },
+    ],
     {
       provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position
       ) {
-        const linePrefix = document
-          .lineAt(position)
-          .text.slice(0, position.character);
-        console.log("Current line prefix:", linePrefix);
+        const lineText = document.lineAt(position).text;
 
-        if (linePrefix.trim() === "font:" || linePrefix.includes("font:")) {
-          const suggestion = new vscode.CompletionItem(
-            "var(--brand-text-sm)",
-            vscode.CompletionItemKind.Variable
+        if (lineText.includes("font:")) {
+          return new vscode.CompletionList(
+            FONT_TOKENS.map((token) => {
+              const suggestion = new vscode.CompletionItem(
+                token,
+                vscode.CompletionItemKind.Constant
+              );
+              suggestion.preselect = true;
+              suggestion.sortText = "!";
+              return suggestion;
+            }),
+            true
           );
-          suggestion.detail = "Brand Text Small";
-          suggestion.sortText = "0";
-          suggestion.insertText = " var(--brand-text-sm)";
-          return [suggestion];
         }
 
         return undefined;
       },
     },
-    " " // Trigger on space after colon
+    " "
   );
 
   context.subscriptions.push(provider);
